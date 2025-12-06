@@ -1,0 +1,14 @@
+econ8320-semester-project/
+├─ data/
+│  └─ ag_series_master.csv              # (will be created after first run)
+├─ scripts/
+│  ├─ fetch_bls.py
+│  └─ helpers.py                        # optional (not required yet)
+├─ app/
+│  └─ streamlit_app.py
+├─ .github/
+│  └─ workflows/
+│     └─ monthly_fetch.yml
+├─ requirements.txt
+├─ README.md
+└─ presentation/

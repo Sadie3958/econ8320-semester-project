@@ -1,4 +1,3 @@
-# streamlit/app.py
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -24,18 +23,26 @@ st.markdown("Interactive visualization of national nonfarm, agriculture employme
 # Employment Line Chart
 # -------------------------
 st.subheader("Employment Trends")
-fig1 = px.line(df, x="date", y=["nonfarm_total", "ag_employment"],
-               labels={"value":"Employees", "date":"Month"},
-               title="National Nonfarm vs Agricultural Employment")
+fig1 = px.line(
+    df,
+    x="date",
+    y=["nonfarm_total", "ag_employment"],
+    labels={"value":"Employees", "date":"Month"},
+    title="National Nonfarm vs Agricultural Employment"
+)
 st.plotly_chart(fig1, use_container_width=True)
 
 # -------------------------
 # Unemployment Line Chart
 # -------------------------
 st.subheader("Unemployment Rate")
-fig2 = px.line(df, x="date", y="unemployment_rate",
-               labels={"unemployment_rate":"Unemployment Rate (%)", "date":"Month"},
-               title="National Unemployment Rate")
+fig2 = px.line(
+    df,
+    x="date",
+    y="unemployment_rate",
+    labels={"unemployment_rate":"Unemployment Rate (%)", "date":"Month"},
+    title="National Unemployment Rate"
+)
 st.plotly_chart(fig2, use_container_width=True)
 
 # -------------------------
@@ -49,3 +56,4 @@ filtered_df = df[(df["date"] >= pd.to_datetime(start_date)) & (df["date"] <= pd.
 
 st.markdown("### Filtered Data Preview")
 st.dataframe(filtered_df.tail(10))
+

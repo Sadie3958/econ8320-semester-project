@@ -1,8 +1,12 @@
 {
   "national": {
-    "nonfarm_sa": "CES0000000001",
-    "unemployment_rate_sa": "LNS14000000"
+    "total_nonfarm_employment": "CES0000000001",
+    "unemployment_rate": "LNS14000000",
+    "agriculture_employment": "LNS12032184"
+  },
+  "notes": {
+    "CES0000000001": "All employees, total nonfarm, seasonally adjusted (CES)",
+    "LNS14000000": "Unemployment Rate, seasonally adjusted (CPS)",
+    "LNS12032184": "Employment in Agriculture & Related Industries, seasonally adjusted (CPS)"
   }
 }
-"national_agriculture": "LNS12032184"
-  }

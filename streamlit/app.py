@@ -83,7 +83,7 @@ fig2 = px.line(
 st.plotly_chart(fig2, use_container_width=True)
 
 # -------------------------
-# State Unemployment Chart
+# State Unemployment Line Chart
 # -------------------------
 st.subheader("State Unemployment Comparison")
 states = df_state['state'].unique().tolist()
@@ -104,6 +104,28 @@ fig3 = px.line(
     title="State Unemployment Rate Comparison"
 )
 st.plotly_chart(fig3, use_container_width=True)
+
+# -------------------------
+# State Unemployment Map
+# -------------------------
+st.subheader("State Unemployment Map")
+
+# Use latest available date per state
+latest_dates = df_state_filtered.groupby('state')['date'].max().reset_index()
+df_latest = pd.merge(df_state_filtered, latest_dates, on=['state','date'], how='inner')
+
+# Create choropleth map
+fig_map = px.choropleth(
+    df_latest,
+    locations="state",
+    locationmode="USA-states",
+    color="unemployment_rate",
+    color_continuous_scale="Reds",
+    scope="usa",
+    labels={"unemployment_rate":"Unemployment Rate (%)"},
+    title="Latest State Unemployment Rates"
+)
+st.plotly_chart(fig_map, use_container_width=True)
 
 # -------------------------
 # Date Range Selector for National Data

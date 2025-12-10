@@ -1,47 +1,37 @@
-import requests
 import pandas as pd
-import json
-import datetime as dt
+import requests
 import os
 
-# ---------- Load State Agricultural Series JSON ----------
-json_path = os.path.join("json", "state_ag_series.json")
-with open(json_path, "r") as file:
-    series_dict = json.load(file)
+# ---- QCEW Download Link (All State Industries) ---- #
+url = "https://download.bls.gov/pub/time.series/en/en.data.1.AllData"
 
-state_mapping = series_dict["11"]  # industry 11 agriculture
+print("Downloading state employment data...")
+data = requests.get(url).text
 
-# ---------- BLS API URL ----------
-BLS_URL = "https://api.bls.gov/publicAPI/v2/timeseries/data/"
+# ---- Load raw file into DataFrame ---- #
+df = pd.read_csv(pd.compat.StringIO(data), sep="\t")
 
-# ---------- Parameters ----------
-years = list(range(2020, dt.datetime.now().year + 1))  # 2020 to current
-years_param = {"startyear": min(years), "endyear": max(years)}
+# ---- Clean Columns ---- #
+df.columns = [col.strip().lower() for col in df.columns]
+df = df.rename(columns={"series_id": "series", "value": "employment"})
 
-data_records = []
+# ---- Filter Agriculture (industry code starts with '11') ---- #
+df_ag = df[df["series"].str.contains("11")]
 
-# ---------- Collect Data Per State ----------
-for state, series_id in state_mapping.items():
-    payload = {"seriesid": [series_id], **years_param}
-    response = requests.post(BLS_URL, json=payload).json()
+# ---- Extract Year-Month ---- #
+df_ag["year"] = df_ag["year"].astype(int)
+df_ag["period"] = df_ag["period"].str.replace("M", "").astype(int)
+df_ag["date"] = pd.to_datetime(df_ag["year"].astype(str) + "-" + df_ag["period"].astype(str) + "-01")
 
-    if "Results" in response:
-        entries = response["Results"]["series"][0]["data"]
-        for item in entries:
-            record = {
-                "date": f"{item['year']}-{item['periodName']}-01",
-                "state": state,
-                "ag_employment": int(item["value"])
-            }
-            data_records.append(record)
+# ---- Extract State Code (characters 4–5) ---- #
+df_ag["state"] = df_ag["series"].str[3:5]
 
-# ---------- Convert to DataFrame ----------
-df = pd.DataFrame(data_records)
-df["date"] = pd.to_datetime(df["date"])
-df = df.sort_values(["state", "date"])
+# ---- Final Selection ---- #
+df_final = df_ag[["date", "state", "employment"]].rename(columns={"employment": "ag_employment"})
+df_final = df_final.dropna().sort_values(["state", "date"])
 
-# ---------- Save CSV ----------
+# ---- Save CSV ---- #
 output_path = os.path.join("data", "state_ag_employment.csv")
-df.to_csv(output_path, index=False)
+df_final.to_csv(output_path, index=False)
 
-print(f"Saved {output_path}")
+print(f"Saved: {output_path}")

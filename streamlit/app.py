@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -7,7 +8,8 @@ import plotly.express as px
 # -------------------------
 @st.cache_data
 def load_data():
-    df = pd.read_csv("../data/national_bls_data.csv", parse_dates=["date"])
+    file_path = os.path.join("data", "national_bls_data.csv")
+    df = pd.read_csv(file_path, parse_dates=["date"])
     return df
 
 df = load_data()
@@ -56,4 +58,3 @@ filtered_df = df[(df["date"] >= pd.to_datetime(start_date)) & (df["date"] <= pd.
 
 st.markdown("### Filtered Data Preview")
 st.dataframe(filtered_df.tail(10))
-

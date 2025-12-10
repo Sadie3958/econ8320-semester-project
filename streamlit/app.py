@@ -2,6 +2,7 @@ import os
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 # -------------------------
 # Load Data
@@ -27,16 +28,32 @@ st.title("US Agriculture & Labor Dashboard")
 st.markdown("Interactive visualization of national nonfarm, agriculture employment, and unemployment rates, with state comparisons.")
 
 # -------------------------
-# Employment Line Chart
+# National Employment Line Chart
 # -------------------------
 st.subheader("National Employment Trends")
-fig1 = px.line(
-    df_national,
-    x="date",
-    y=["nonfarm_total", "ag_employment"],
-    labels={"value":"Employees", "date":"Month"},
-    title="National Nonfarm vs Agricultural Employment"
-)
+
+# Calculate average monthly agricultural employment to highlight peaks
+df_national['month'] = df_national['date'].dt.month
+monthly_avg_ag = df_national.groupby('month')['ag_employment'].mean()
+peak_months = monthly_avg_ag.sort_values(ascending=False).head(3).index.tolist()  # top 3 peak months
+
+fig1 = go.Figure()
+# Line for national nonfarm
+fig1.add_trace(go.Scatter(x=df_national['date'], y=df_national['nonfarm_total'],
+                          mode='lines', name='Nonfarm Total'))
+# Line for ag employment
+fig1.add_trace(go.Scatter(x=df_national['date'], y=df_national['ag_employment'],
+                          mode='lines', name='Agricultural Employment'))
+
+# Add markers for peak months
+for month in peak_months:
+    peak_dates = df_national[df_national['month'] == month]['date']
+    peak_values = df_national[df_national['month'] == month]['ag_employment']
+    fig1.add_trace(go.Scatter(x=peak_dates, y=peak_values,
+                              mode='markers', name=f'Peak Month {month}', marker=dict(size=8, color='red')))
+
+fig1.update_layout(title="National Nonfarm vs Agricultural Employment",
+                   xaxis_title="Month", yaxis_title="Employees")
 st.plotly_chart(fig1, use_container_width=True)
 
 # -------------------------

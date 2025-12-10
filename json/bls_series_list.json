@@ -2,11 +2,15 @@
   "national": {
     "total_nonfarm_employment": "CES0000000001",
     "unemployment_rate": "LNS14000000",
-    "agriculture_employment": "LNS12032184"
+    "agriculture_employment": "LNS12032184",
+    "avg_weekly_hours": "CES0500000001",
+    "avg_hourly_earnings": "CES0500000003"
   },
   "notes": {
     "CES0000000001": "All employees, total nonfarm, seasonally adjusted (CES)",
     "LNS14000000": "Unemployment Rate, seasonally adjusted (CPS)",
-    "LNS12032184": "Employment in Agriculture & Related Industries, seasonally adjusted (CPS)"
+    "LNS12032184": "Employment in Agriculture & Related Industries, seasonally adjusted (CPS)",
+    "CES0500000001": "Average Weekly Hours of All Employees, Total Private (CES)",
+    "CES0500000003": "Average Hourly Earnings of All Employees, Total Private (CES)"
   }
 }

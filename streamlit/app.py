@@ -6,7 +6,7 @@ st.set_page_config(page_title="U.S. Labor Dashboard", layout="wide")
 
 """
 # U.S. Labor Market Dashboard  
-_ECON 8320 Semester Project — Sadie Gingerich_
+_ECON 8320 Semester Project — Sadie (Lamplot) Gingerich_
 
 This dashboard visualizes monthly labor statistics using BLS CES and LAUS data.
 
@@ -76,7 +76,7 @@ metric_labels = {
 }
 
 # SECTION 1 — NATIONAL AGRICULTURAL + LABOR SERIES
-st.subheader("📈 National Labor Market Trends")
+st.subheader("National Labor Market Trends")
 
 fig1 = px.line(
     national_df,
@@ -87,7 +87,7 @@ fig1 = px.line(
 st.plotly_chart(fig1, use_container_width=True)
 
 # SECTION 2 — STATE UNEMPLOYMENT RATES
-st.subheader("📊 State Unemployment Rates (LAUS)")
+st.subheader("State Unemployment Rates (LAUS)")
 
 if selected_states:
     df_states = unemployment_df[unemployment_df["state"].isin(selected_states)]
@@ -111,7 +111,7 @@ st.info(
 )
 
 # SECTION 4 — RAW DATA PREVIEW (OPTIONAL)
-with st.expander("📄 View Raw Data Tables"):
+with st.expander("View Raw Data Tables"):
     st.write("### National Employment Data")
     st.dataframe(national_df)
 

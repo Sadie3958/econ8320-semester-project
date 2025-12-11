@@ -18,7 +18,7 @@ This app includes:
 
 • National Nonfarm Employment (CES)  
 • National Agricultural Employment (CES 102 series)  
-• State Unemployment Rates (LAUS)
+• State Unemployment Rates (LAUS)  
 
 ---
 
@@ -49,7 +49,6 @@ def load_data():
 
     return national, unemployment
 
-
 national_df, unemployment_df = load_data()
 
 # SIDEBAR CONTROLS
@@ -61,38 +60,22 @@ selected_states = st.sidebar.multiselect(
     default=["NE", "IA", "TX"]
 )
 
-# Metric Type dropdown
-metric_type = st.sidebar.selectbox(
-    "Select Metric Type:",
-    ["Employment", "Unemployment"]
-)
-
-# Metric options based on type
-if metric_type == "Employment":
-    metric_options = ["ag_employment", "nonfarm_total"]
-else:
-    metric_options = ["unemployment_rate"]
-
 selected_metric = st.sidebar.selectbox(
-    f"Select {metric_type} Metric:",
-    metric_options,
+    "National Employment Metric:",
+    [
+        "ag_employment",
+        "nonfarm_total"
+    ],
     index=0
 )
 
 metric_labels = {
     "ag_employment": "Agricultural Employment",
-    "nonfarm_total": "Total Nonfarm Employment",
-    "unemployment_rate": "Unemployment Rate",
+    "nonfarm_total": "Total Nonfarm Employment"
 }
 
-# SECTION 1 — NATIONAL LABOR MARKET SERIES
-st.subheader("📈 National Labor Market Trends")
-
-# Determine hover format
-if selected_metric == "unemployment_rate":
-    hover_template = "%{y:.1f}%<br>%{x|%b %Y}"
-else:
-    hover_template = "%{y:,.0f}<br>%{x|%b %Y}"  # commas for thousands
+# SECTION 1 — NATIONAL AGRICULTURAL + LABOR SERIES
+st.subheader("National Labor Market Trends")
 
 fig1 = px.line(
     national_df,
@@ -100,18 +83,10 @@ fig1 = px.line(
     y=selected_metric,
     title=f"National {metric_labels[selected_metric]}"
 )
-
-fig1.update_traces(hovertemplate=hover_template)
-fig1.update_layout(
-    yaxis_title=metric_labels[selected_metric],
-    xaxis_title="Date",
-    hovermode="x unified"
-)
-
 st.plotly_chart(fig1, use_container_width=True)
 
 # SECTION 2 — STATE UNEMPLOYMENT RATES
-st.subheader("📊 State Unemployment Rates (LAUS)")
+st.subheader("State Unemployment Rates (LAUS)")
 
 if selected_states:
     df_states = unemployment_df[unemployment_df["state"].isin(selected_states)]
@@ -123,21 +98,14 @@ if selected_states:
         color="state",
         title="State Unemployment Rate Over Time"
     )
-    fig2.update_traces(hovertemplate="%{y:.1f}%<br>%{x|%b %Y}")
-    fig2.update_layout(
-        yaxis_title="Unemployment Rate (%)",
-        xaxis_title="Date",
-        hovermode="x unified"
-    )
-
     st.plotly_chart(fig2, use_container_width=True)
 else:
     st.warning("Please select at least one state to display unemployment data.")
 
 # SECTION 3 — NOTE ABOUT STATE AGRICULTURAL DATA
 st.info(
-    "State-level agricultural employment data is not available as a clean monthly."
-    "time series from BLS or USDA. This dashboard uses the national agricultural."
+    "State-level agricultural employment data is not available as a clean monthly "
+    "time series from BLS or USDA. This dashboard uses the national agricultural "
     "employment series instead."
 )
 

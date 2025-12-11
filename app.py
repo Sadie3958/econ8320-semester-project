@@ -16,25 +16,15 @@ This dashboard visualizes monthly labor statistics using BLS CES and LAUS data.
 
 This app includes:
 
-• National Nonfarm Employment (CES)  
-• National Agricultural Employment (CES 102 series)  
-• State Unemployment Rates (LAUS)  
+• National Nonfarm Employment  
+• National Agricultural Employment  
+• State Unemployment Rates  
 
 ---
 
 ### Data Limitation: State-Level Agricultural Employment
 
-One of the original project goals was to analyze **agricultural employment by state**.  
-However, after attempting to retrieve data from:
-
-- BLS CES (no state-level agriculture series published)  
-- USDA ERS (endpoint unavailable; 404 errors)  
-- USDA NASS (no monthly employment series)  
-
-…there is **no publicly available monthly state-level agricultural employment dataset**.
-
-Because of this limitation, this dashboard uses **national agricultural employment** instead.  
-This limitation is documented in the final project report.
+State-level agricultural employment data is not available as a clean monthly time series.
 """
 
 # LOAD DATA
@@ -60,22 +50,24 @@ selected_states = st.sidebar.multiselect(
     default=["NE", "IA", "TX"]
 )
 
-selected_metric = st.sidebar.selectbox(
-    "National Employment Metric:",
-    [
-        "ag_employment",
-        "nonfarm_total"
-    ],
-    index=0
-)
+# Only include metrics that actually exist in the CSV
+available_metrics = [col for col in ["ag_employment", "nonfarm_total", "avg_weekly_hours", "avg_hourly_earnings"] if col in national_df.columns]
 
 metric_labels = {
     "ag_employment": "Agricultural Employment",
-    "nonfarm_total": "Total Nonfarm Employment"
+    "nonfarm_total": "Total Nonfarm Employment",
+    "avg_weekly_hours": "Average Weekly Hours (Agriculture)",
+    "avg_hourly_earnings": "Average Hourly Earnings (Agriculture)",
 }
 
+selected_metric = st.sidebar.selectbox(
+    "National Employment Metric:",
+    available_metrics,
+    index=0
+)
+
 # SECTION 1 — NATIONAL AGRICULTURAL + LABOR SERIES
-st.subheader("National Labor Market Trends")
+st.subheader("📈 National Labor Market Trends")
 
 fig1 = px.line(
     national_df,
@@ -86,7 +78,7 @@ fig1 = px.line(
 st.plotly_chart(fig1, use_container_width=True)
 
 # SECTION 2 — STATE UNEMPLOYMENT RATES
-st.subheader("State Unemployment Rates (LAUS)")
+st.subheader("📊 State Unemployment Rates (LAUS)")
 
 if selected_states:
     df_states = unemployment_df[unemployment_df["state"].isin(selected_states)]
@@ -110,7 +102,7 @@ st.info(
 )
 
 # SECTION 4 — RAW DATA PREVIEW (OPTIONAL)
-with st.expander("View Raw Data Tables"):
+with st.expander("📄 View Raw Data Tables"):
     st.write("### National Employment Data")
     st.dataframe(national_df)
 

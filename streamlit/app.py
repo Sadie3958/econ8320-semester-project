@@ -1,4 +1,3 @@
-import os
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -20,8 +19,6 @@ This app includes:
 • National Nonfarm Employment (CES)  
 • National Agricultural Employment (CES 102 series)  
 • State Unemployment Rates (LAUS)  
-• Weekly Hours in Agriculture (CES)  
-• Average Hourly Earnings in Agriculture (CES)
 
 ---
 
@@ -40,15 +37,12 @@ Because of this limitation, this dashboard uses **national agricultural employme
 This limitation is documented in the final project report.
 """
 
-# ---- LOAD DATA ----
-
-# Correct path for your folder structure
-DATA_PATH = os.path.join("..", "data")
-
+# LOAD DATA
 @st.cache_data
 def load_data():
-    national = pd.read_csv(os.path.join(DATA_PATH, "national_employment.csv"))
-    unemployment = pd.read_csv(os.path.join(DATA_PATH, "state_unemployment.csv"))
+    # Use paths relative to the repo root (Streamlit Cloud runs from root)
+    national = pd.read_csv("data/national_employment.csv")
+    unemployment = pd.read_csv("data/state_unemployment.csv")
 
     # Convert date columns
     national["date"] = pd.to_datetime(national["date"])
@@ -58,8 +52,7 @@ def load_data():
 
 national_df, unemployment_df = load_data()
 
-# ---- SIDEBAR CONTROLS ----
-
+# SIDEBAR CONTROLS
 st.sidebar.header("Filters")
 
 selected_states = st.sidebar.multiselect(
@@ -79,11 +72,10 @@ selected_metric = st.sidebar.selectbox(
 
 metric_labels = {
     "ag_employment": "Agricultural Employment",
-    "nonfarm_total": "Total Nonfarm Employment",
+    "nonfarm_total": "Total Nonfarm Employment"
 }
 
-# ---- SECTION 1 — NATIONAL AGRICULTURAL + LABOR SERIES ----
-
+# SECTION 1 — NATIONAL AGRICULTURAL + LABOR SERIES
 st.subheader("📈 National Labor Market Trends")
 
 fig1 = px.line(
@@ -94,8 +86,7 @@ fig1 = px.line(
 )
 st.plotly_chart(fig1, use_container_width=True)
 
-# ---- SECTION 2 — STATE UNEMPLOYMENT RATES ----
-
+# SECTION 2 — STATE UNEMPLOYMENT RATES
 st.subheader("📊 State Unemployment Rates (LAUS)")
 
 if selected_states:
@@ -112,16 +103,14 @@ if selected_states:
 else:
     st.warning("Please select at least one state to display unemployment data.")
 
-# ---- SECTION 3 — NOTE ABOUT STATE AGRICULTURAL DATA ----
-
+# SECTION 3 — NOTE ABOUT STATE AGRICULTURAL DATA
 st.info(
     "State-level agricultural employment data is not available as a clean monthly "
     "time series from BLS or USDA. This dashboard uses the national agricultural "
     "employment series instead."
 )
 
-# ---- SECTION 4 — RAW DATA PREVIEW (OPTIONAL) ----
-
+# SECTION 4 — RAW DATA PREVIEW (OPTIONAL)
 with st.expander("📄 View Raw Data Tables"):
     st.write("### National Employment Data")
     st.dataframe(national_df)
